@@ -10,6 +10,13 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.get("/", (req, res) => {
+  res.json({
+    message: "Bienvenue sur l'API SagaTask 🚀",
+    status: "Online",
+    database: "MongoDB Atlas"
+  });
+});
 
 mongoose
   .connect(process.env.MONGO_URI)
