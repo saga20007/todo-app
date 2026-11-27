@@ -3,7 +3,17 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
 exports.register = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password } = req.body || {};
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ error: "Nom, email et mot de passe requis" });
+  }
+  if (password.length < 6) {
+    return res
+      .status(400)
+      .json({ error: "Le mot de passe doit contenir au moins 6 caractères" });
+  }
+
   try {
     const user = await User.create({ name, email, password });
     res.status(201).json({
@@ -16,7 +26,12 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body || {};
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email et mot de passe requis" });
+  }
+
   try {
     const user = await User.findOne({ email });
     if (!user) {
@@ -37,6 +52,7 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: "Erreur serveur" });
   }
 };
+
 exports.me = async (req, res) => {
   try {
     const user = await User.findById(req.userId).select("-password");
